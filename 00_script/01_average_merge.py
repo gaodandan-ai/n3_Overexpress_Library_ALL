@@ -99,7 +99,13 @@ def process_excel(input_file, output_dir):
 
     xl = pd.ExcelFile(input_file)
     sheet_names = xl.sheet_names
-    all_dfs = {name: xl.parse(name) for name in sheet_names}
+    
+    all_dfs = {}
+    for name in sheet_names:
+        df = xl.parse(name)
+        if len(df.columns) >= 2:
+            df = df[pd.to_numeric(df.iloc[:, 1], errors='coerce') < 1460]
+        all_dfs[name] = df
     
     if len(sheet_names) < 4:
         print(f"Error: {file_name} needs at least 4 sheets.")
